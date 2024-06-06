@@ -1,0 +1,28 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+<div class="container-sm m-3">
+    {% if user.is_authenticated %}
+        <form class="m-3">
+            <div>
+                <label for="post_area" class="form-label">New Post</label>
+                <textarea class="form-control mb-3" id="post_area" rows=4 aria-describedby="post" ></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+        <div class="m-3 border rounded d-flex flex-column" id="posts">
+            <div class="card-header">
+                Posted by User
+              </div>
+              <div class="card-body">
+                <p class="card-text">Content</p>
+              </div>
+              <div class="card-footer text-body-secondary d-flex justify-content-between align-content-center">
+                2 days ago
+                <button class=" heart-button align-self-end">❤️ 0</button>
+                
+              </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
