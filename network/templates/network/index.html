@@ -2,27 +2,29 @@
 
 {% block body %}
 <div class="container-sm m-3">
-    {% if user.is_authenticated %}
-        <form class="m-3">
-            <div>
-                <label for="post_area" class="form-label">New Post</label>
-                <textarea class="form-control mb-3" id="post_area" rows=4 aria-describedby="post" ></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
-        </form>
-        <div class="m-3 border rounded d-flex flex-column" id="posts">
-            <div class="card-header">
-                Posted by User
-              </div>
-              <div class="card-body">
-                <p class="card-text">Content</p>
-              </div>
-              <div class="card-footer text-body-secondary d-flex justify-content-between align-content-center">
-                2 days ago
-                <button class=" heart-button align-self-end">❤️ 0</button>
-                
-              </div>
+  {% if user.is_authenticated %}
+    <form class="m-3" action = "{% url 'index'%}" method="post">
+        {% csrf_token %}
+        <div>
+            <label for="post_area" class="form-label">New Post</label>
+            <textarea class="form-control mb-3" id="post_area" rows=4 aria-describedby="post" name="body"></textarea>
         </div>
-    {% endif %}
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    {% for post in posts %}
+      <div class="m-3 border rounded d-flex flex-column" id="posts">
+        <div class="card-header">
+          Posted by {{ post.user.username }}
+        </div>
+        <div class="card-body">
+          <p class="card-text">{{ post.body }}</p>
+        </div>
+        <div class="card-footer text-body-secondary d-flex justify-content-between align-content-center">
+          {{ post.timestamp }}
+          <button class=" heart-button align-self-end">❤️ 0</button>
+        </div>
+      </div>
+    {% endfor %}
+  {% endif %}
 </div>
 {% endblock %}
