@@ -80,7 +80,11 @@ def profile(request, username):
     user = request.user
     followers_count = Follow.objects.filter(followed=user_profile).count()
     following_count = Follow.objects.filter(follower=user_profile).count()
-    follows = Follow.objects.filter(follower=user, followed=user_profile)
+    follows = None
+
+    if user.is_authenticated:
+        follows = Follow.objects.filter(follower=user, followed=user_profile)
+
     return render(request, "network/profile.html", {
         "user_profile":user_profile,
         "posts":posts,
@@ -110,3 +114,14 @@ def unfollow(request, username):
             follow.delete()
 
     return redirect('profile', username=username)
+
+@login_required
+def following(request):
+    user = request.user
+    follows = Follow.objects.filter(follower=user)
+    followed_users = follows.values_list("followed__username", flat=True)
+    posts = Post.objects.filter(user__username__in=followed_users).order_by('-timestamp')
+
+    return render(request,"network/following.html", {
+        "posts":posts
+    })
