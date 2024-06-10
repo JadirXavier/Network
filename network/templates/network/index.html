@@ -11,10 +11,11 @@
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
+  {% endif %}
     {% for post in posts %}
-      <div class="m-3 border rounded d-flex flex-column" id="posts">
+      <div class="card m-3 border rounded d-flex flex-column" id="posts">
         <div class="card-header">
-          Posted by {{ post.user.username }}
+          Posted by <a href="{% url 'profile' post.user.username %}">{{ post.user.username }}</a>
         </div>
         <div class="card-body">
           <p class="card-text">{{ post.body }}</p>
@@ -25,6 +26,5 @@
         </div>
       </div>
     {% endfor %}
-  {% endif %}
 </div>
 {% endblock %}
