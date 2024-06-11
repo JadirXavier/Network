@@ -1,4 +1,4 @@
-  .heart-button {
+  .heart-button, .edit-button{
         background: none;
         border: none;
         cursor: pointer;
@@ -7,7 +7,7 @@
         text-decoration: none;
   }
 
-  .heart-button:focus {
+  .heart-button:focus, .edit-button:focus{
     outline: none; 
     outline: none -webkit-focus-ring-color; 
 }

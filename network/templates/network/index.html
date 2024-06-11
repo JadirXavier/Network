@@ -23,7 +23,10 @@
       <div class="card-footer text-body-secondary d-flex justify-content-between align-content-center">
         {{ post.timestamp }}
         {% if user.is_authenticated %}
-          <button class=" heart-button align-self-end">❤️ 0</button>
+          <div class="d-flex flex-row align-items-end">
+            <button class="edit-button px-1" title="Edit">✏️</button>
+            <button class="heart-button px-1" title="Like">❤️ 0</button>
+          </div>
         {% endif %}
       </div>
     </div>

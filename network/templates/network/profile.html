@@ -21,7 +21,7 @@
     </div>
   <h1 class="card-title m-3">Posts</h1>
   {% for post in page_obj %}
-    <div class="card m-3 border rounded d-flex flex-column" id="posts">
+    <div class="card m-3 border rounded d-flex flex-column" id="post-view">
       <div class="card-header">
         Posted by {{ post.user.username }}
       </div>
@@ -34,6 +34,8 @@
           <button class=" heart-button align-self-end">❤️ 0</button>
         {% endif %}
       </div>
+    </div>
+    <div class="card m-3 border rounded d-flex flex-column" id="post-form">
     </div>
   {% endfor %}
   <div class="current m-3">
@@ -83,6 +85,13 @@
         alert("Please enter a valid page number between 1 and " + maxPage);
     }
   }
+
+  function editPost(post_id) {
+    
+  }
+
+
+
   </script>
 
 </div>

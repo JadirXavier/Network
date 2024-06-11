@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.core.paginator import Paginator
+from django.http import JsonResponse
 
 from .models import User, Post, Like, Follow
 
@@ -144,3 +145,21 @@ def following(request):
         "posts":posts,
         "page_obj": page_obj
     })
+
+
+@login_required
+def get_post(request, post_id):
+    try:
+        post = Post.objects.get(user=request.user, pk=post_id)
+    except Post.DoesNotExist:
+        return JsonResponse({"error": "Post not found."}, status=404)
+
+    # Return email contents
+    if request.method == "GET":
+        return JsonResponse(post.serialize())
+
+    # Email must be via GET or PUT
+    else:
+        return JsonResponse({
+            "error": "GET or PUT request required."
+        }, status=400)
