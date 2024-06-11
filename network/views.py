@@ -4,6 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.urls import reverse
+from django.core.paginator import Paginator
 
 from .models import User, Post, Like, Follow
 
@@ -19,8 +20,14 @@ def index(request):
         created_post.save()
         return redirect('index')
 
+    # Pagination
+    paginator = Paginator(posts, 10)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
     return render(request, "network/index.html", {
-        "posts": posts
+        "posts": posts,
+        "page_obj": page_obj
     })
 
 def login_view(request):
@@ -85,6 +92,11 @@ def profile(request, username):
     if user.is_authenticated:
         follows = Follow.objects.filter(follower=user, followed=user_profile)
 
+    # Pagination
+    paginator = Paginator(posts, 10)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
     return render(request, "network/profile.html", {
         "user_profile":user_profile,
         "posts":posts,
@@ -92,6 +104,7 @@ def profile(request, username):
         "follows":follows,
         "following_count":following_count,
         "followers_count":followers_count,
+        "page_obj":page_obj
     })
 
 @login_required
@@ -122,6 +135,12 @@ def following(request):
     followed_users = follows.values_list("followed__username", flat=True)
     posts = Post.objects.filter(user__username__in=followed_users).order_by('-timestamp')
 
+    # Pagination
+    paginator = Paginator(posts, 10)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
     return render(request,"network/following.html", {
-        "posts":posts
+        "posts":posts,
+        "page_obj": page_obj
     })
