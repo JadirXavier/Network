@@ -6,6 +6,8 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.core.paginator import Paginator
 from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
 
 from .models import User, Post, Like, Follow
 
@@ -145,19 +147,30 @@ def following(request):
         "current_user":user
     })
 
+@csrf_exempt
 @login_required
 def get_post(request, post_id):
     try:
         post = Post.objects.get(user=request.user, pk=post_id)
     except Post.DoesNotExist:
         return JsonResponse({"error": "Post not found."}, status=404)
+    
+    if request.method == "PUT":
+        try:
+            data = json.loads(request.body)
+            new_body = data.get("body")
 
-    # Return email contents
-    if request.method == "GET":
-        return JsonResponse(post.serialize())
+            if not new_body:
+                return JsonResponse({"error": "Body is required."}, status=400)
+        
+            post.body = new_body
+            post.save()
 
-    # Email must be via GET or PUT
+            return JsonResponse({"success": "Post updated."})
+        except:
+            return JsonResponse({"error": "Invalid body."}, status=400)
+        
     else:
-        return JsonResponse({
-            "error": "GET or PUT request required."
-        }, status=400)
+        return JsonResponse({"error": "PUT request required."}, status=405)
+    
+

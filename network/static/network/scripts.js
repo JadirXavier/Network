@@ -1,22 +1,12 @@
 document.addEventListener('DOMContentLoaded', function() {
-  // Seleciona todos os botões de edição
   const editButtons = document.querySelectorAll('.edit-button');
-  
-  // Adiciona um event listener a cada botão de edição
   editButtons.forEach(button => {
     button.addEventListener('click', () => {
-      // Obtém o ID do post a partir do atributo data-post-id
-      const postId = button.getAttribute('data-post-id');
-      const postViewId = `#post_view_${postId}`;
-      const postEditId = `#post_edit_${postId}`;
-      
-      // Chama a função edit_post com os IDs apropriados
-      edit_post(postEditId, postViewId);
+      const postID = button.getAttribute('data-post-id');
+      edit_post(postID);
     });
   });
 });
-
-
 
 // Pagination
 function goToPage(maxPage) {
@@ -31,13 +21,33 @@ function goToPage(maxPage) {
 }
 
   //Hide post_view and show post_edit
-  function edit_post(edit, post) {
-    const editElement = document.querySelector(edit);
-    const postElement = document.querySelector(post);
+  function edit_post(ID) {
+    let postViewId = `#post_view_${ID}`;
+    let postEditId = `#post_edit_${ID}`;
+    let saveButtonId = `#save_button_${ID}`
+
+    console.log (postViewId, postEditId, saveButtonId);
+
+    let editElement = document.querySelector(postEditId);
+    let postElement = document.querySelector(postViewId);
+    let saveButton = document.querySelector(saveButtonId);
+    let textArea = document.querySelector(`#post_edit_${ID} textarea`);
     
     editElement.className = 'card m-3 border rounded d-flex flex-column'
     editElement.style.display = 'block';
     postElement.className = ''
     postElement.style.display = 'none';
 
+
+    saveButton.addEventListener('click', () => {
+        fetch(`/post/${ID}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                body: textArea.innerHTML,
+            })
+        })
+    })
+
+
+    
   }

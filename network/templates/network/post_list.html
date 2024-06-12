@@ -1,4 +1,5 @@
 {% for post in page_obj %}
+  <!--Post-->
     <div class="card m-3 border rounded d-flex flex-column" id="post_view_{{post.id}}">
       <div class="card-header">
         Posted by <a href="{% url 'profile' post.user.username %}">{{ post.user.username }}</a>
@@ -18,48 +19,58 @@
         {% endif %}
       </div>
     </div>
-    <div id="post_edit_{{post.id}}" style="display:none">
-      <div class="card-header">
-        Posted by <a href="{% url 'profile' post.user.username %}">{{ post.user.username }}</a>
-      </div>
-      <div class="card-body">
-        <textarea class="card-text w-100">{{ post.body }}</textarea>
-      </div>
-      <div class="card-footer text-body-secondary d-flex justify-content-between align-content-center">
-        {{ post.timestamp }}
-      </div>
-    </div>
-{% endfor %}
-  <div class="current m-3">
-    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
-  </div>
-  <div class="pagination d-flex flex-row m-3">
-    {% if page_obj.has_previous %}
-      <div class="page-item d-flex flex-row">
-        <a class="page-link" href="?page=1"><<</a>
-        <a class="page-link" href="?page={{ page_obj.previous_page_number }}"><</a>
-      </div>
-    {% else %}
-      <div class="page-item disabled d-flex flex-row">
-        <span class="page-link"><<</span>
-        <span class="page-link"><</span>
-      </div>
-    {% endif %}
-    {% if page_obj.has_next %}
-      <div class="page-item d-flex flex-row">
-        <a class="page-link" href="?page={{ page_obj.next_page_number }}">></a>
-        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">>></a>
-      </div>
-    {% else %}
-      <div class="page-item disabled d-flex flex-row">
-        <span class="page-link">></span>
-        <span class="page-link">>></span>
-      </div>
-    {% endif %}
-  </div>
+    <!--Edit post-->
 
-  <div class="input-page m-3">
-    <label for="page_input">Go to page:</label>
-    <input type="number" id="page_input" name="page" min="1" max="{{ page_obj.paginator.num_pages }}">
-    <button onclick="goToPage(maxPage)">Go</button>
-  </div>
+      <div id="post_edit_{{post.id}}" style="display:none">
+        <div class="card-header">
+          Posted by <a href="{% url 'profile' post.user.username %}">{{ post.user.username }}</a>
+        </div>
+        <div class="card-body">
+          <textarea class="card-text w-100">{{ post.body }}</textarea>
+        </div>
+        <div class="card-footer text-body-secondary d-flex justify-content-between align-content-center">
+          {{ post.timestamp }}
+          {% if user.is_authenticated %}
+          <div class="d-flex flex-row align-items-end">
+            {% if post.user == request.user %}
+              <button class="save-edit-button px-1" title="Save" id="save_button_{{post.id}}">✔️</button>
+            {% endif %}
+          </div>
+        {% endif %}
+        </div>
+      </div>
+{% endfor %}
+
+  <!--Pagination-->
+    <div class="current m-3">
+      Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+    </div>
+    <div class="pagination d-flex flex-row m-3">
+      {% if page_obj.has_previous %}
+        <div class="page-item d-flex flex-row">
+          <a class="page-link" href="?page=1"><<</a>
+          <a class="page-link" href="?page={{ page_obj.previous_page_number }}"><</a>
+        </div>
+      {% else %}
+        <div class="page-item disabled d-flex flex-row">
+          <span class="page-link"><<</span>
+          <span class="page-link"><</span>
+        </div>
+      {% endif %}
+      {% if page_obj.has_next %}
+        <div class="page-item d-flex flex-row">
+          <a class="page-link" href="?page={{ page_obj.next_page_number }}">></a>
+          <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">>></a>
+        </div>
+      {% else %}
+        <div class="page-item disabled d-flex flex-row">
+          <span class="page-link">></span>
+          <span class="page-link">>></span>
+        </div>
+      {% endif %}
+    </div>
+    <div class="input-page m-3">
+      <label for="page_input">Go to page:</label>
+      <input type="number" id="page_input" name="page" min="1" max="{{ page_obj.paginator.num_pages }}">
+      <button onclick="goToPage(maxPage)">Go</button>
+    </div>
