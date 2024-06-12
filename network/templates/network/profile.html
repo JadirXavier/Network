@@ -1,4 +1,5 @@
 {% extends "network/layout.html" %}
+{% load static %}
 
 {% block body %}
 <div class="container-sm m-3">
@@ -20,79 +21,8 @@
       {% endif %}
     </div>
   <h1 class="card-title m-3">Posts</h1>
-  {% for post in page_obj %}
-    <div class="card m-3 border rounded d-flex flex-column" id="post-view">
-      <div class="card-header">
-        Posted by {{ post.user.username }}
-      </div>
-      <div class="card-body">
-        <p class="card-text">{{ post.body }}</p>
-      </div>
-      <div class="card-footer text-body-secondary d-flex justify-content-between align-content-center">
-        {{ post.timestamp }}
-        {% if user.is_authenticated %}
-          <button class=" heart-button align-self-end">❤️ 0</button>
-        {% endif %}
-      </div>
-    </div>
-    <div class="card m-3 border rounded d-flex flex-column" id="post-form">
-    </div>
-  {% endfor %}
-  <div class="current m-3">
-    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
-  </div>
-  <div class="pagination d-flex flex-row m-3">
-    {% if page_obj.has_previous %}
-      <div class="page-item d-flex flex-row">
-        <a class="page-link" href="?page=1"><<</a>
-        <a class="page-link" href="?page={{ page_obj.previous_page_number }}"><</a>
-      </div>
-    {% else %}
-      <div class="page-item disabled d-flex flex-row">
-        <span class="page-link"><<</span>
-        <span class="page-link"><</span>
-      </div>
-    {% endif %}
-    {% if page_obj.has_next %}
-      <div class="page-item d-flex flex-row">
-        <a class="page-link" href="?page={{ page_obj.next_page_number }}">></a>
-        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">>></a>
-      </div>
-    {% else %}
-      <div class="page-item disabled d-flex flex-row">
-        <span class="page-link">></span>
-        <span class="page-link">>></span>
-      </div>
-    {% endif %}
-  </div>
-
-  <div class="input-page m-3">
-    <label for="page_input">Go to page:</label>
-    <input type="number" id="page_input" name="page" min="1" max="{{ page_obj.paginator.num_pages }}">
-    <button onclick="goToPage()">Go</button>
-  </div>
-</div>
-  
-  <script>
-  function goToPage() {
-    let input = document.getElementById("page_input");
-    let page = parseInt(input.value);
-    let maxPage = {{ page_obj.paginator.num_pages }};
-
-    if (page >= 1 && page <= maxPage) {
-        window.location.href = "?page=" + page;
-    } else {
-        alert("Please enter a valid page number between 1 and " + maxPage);
-    }
-  }
-
-  function editPost(post_id) {
-    
-  }
-
-
-
-  </script>
-
+  {% include 'network/post_list.html' %}
+  <script> let maxPage = {{ page_obj.paginator.num_pages }} </script>
+  <script src="{% static 'network/scripts.js' %}"></script>
 </div>
 {% endblock %}

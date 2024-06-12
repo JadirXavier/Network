@@ -12,10 +12,10 @@ from .models import User, Post, Like, Follow
 
 def index(request):
     posts = Post.objects.all().order_by('-timestamp')
+    user = request.user
 
     # Submit post
     if request.method == "POST":
-        user = request.user
         body = request.POST["body"]
         created_post = Post(user=user, body=body)
         created_post.save()
@@ -27,8 +27,8 @@ def index(request):
     page_obj = paginator.get_page(page_number)
 
     return render(request, "network/index.html", {
-        "posts": posts,
-        "page_obj": page_obj
+        "page_obj": page_obj,
+        "current_user":user
     })
 
 def login_view(request):
@@ -100,8 +100,7 @@ def profile(request, username):
 
     return render(request, "network/profile.html", {
         "user_profile":user_profile,
-        "posts":posts,
-        "user":user,
+        "current_user":user,
         "follows":follows,
         "following_count":following_count,
         "followers_count":followers_count,
@@ -142,10 +141,9 @@ def following(request):
     page_obj = paginator.get_page(page_number)
 
     return render(request,"network/following.html", {
-        "posts":posts,
-        "page_obj": page_obj
+        "page_obj": page_obj,
+        "current_user":user
     })
-
 
 @login_required
 def get_post(request, post_id):
