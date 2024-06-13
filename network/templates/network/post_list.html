@@ -5,7 +5,7 @@
         Posted by <a href="{% url 'profile' post.user.username %}">{{ post.user.username }}</a>
       </div>
       <div class="card-body">
-        <p class="card-text">{{ post.body }}</p>
+        <p class="card-text" id="post_body_{{post.id}}">{{ post.body }}</p>
       </div>
       <div class="card-footer text-body-secondary d-flex justify-content-between align-content-center">
         {{ post.timestamp }}

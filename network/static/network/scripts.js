@@ -1,14 +1,15 @@
 document.addEventListener('DOMContentLoaded', function() {
+  //Gives editPost function for each editButton
   const editButtons = document.querySelectorAll('.edit-button');
-  editButtons.forEach(button => {
-    button.addEventListener('click', () => {
-      const postID = button.getAttribute('data-post-id');
-      edit_post(postID);
+  editButtons.forEach(editButton => {
+    editButton.addEventListener('click', () => {
+      const postID = editButton.getAttribute('data-post-id');
+      editPost(postID);
     });
   });
 });
 
-// Pagination
+//Pagination
 function goToPage(maxPage) {
   let input = document.getElementById("page_input");
   let page = parseInt(input.value);
@@ -20,34 +21,52 @@ function goToPage(maxPage) {
   }
 }
 
-  //Hide post_view and show post_edit
-  function edit_post(ID) {
+  
+  function editPost(ID) {
+    //Template tags IDs
     let postViewId = `#post_view_${ID}`;
     let postEditId = `#post_edit_${ID}`;
     let saveButtonId = `#save_button_${ID}`
+    let postBodyId = `#post_body_${ID}`
 
-    console.log (postViewId, postEditId, saveButtonId);
-
+    //Template elements
     let editElement = document.querySelector(postEditId);
     let postElement = document.querySelector(postViewId);
     let saveButton = document.querySelector(saveButtonId);
-    let textArea = document.querySelector(`#post_edit_${ID} textarea`);
+    let editTextArea = document.querySelector(`${postEditId} textarea`);
+    let postBody = document.querySelector(postBodyId)
     
+    //Hide post_view and show post_edit
     editElement.className = 'card m-3 border rounded d-flex flex-column'
     editElement.style.display = 'block';
     postElement.className = ''
     postElement.style.display = 'none';
 
-
+    //PUT request
     saveButton.addEventListener('click', () => {
         fetch(`/post/${ID}`, {
             method: 'PUT',
             body: JSON.stringify({
-                body: textArea.innerHTML,
+                body: editTextArea.value,
             })
         })
+        .then(response => response.json())
+        .then(result => {
+          if(result.success) {
+            //Retrive updated post body with serialize() from update_post funcion from view
+            updatedPost = result.post
+            postBody.innerText = updatedPost.body
+
+            //Hide post_edit and show post_view
+            postElement.className = 'card m-3 border rounded d-flex flex-column'
+            postElement.style.display = 'block';
+            editElement.className = ''
+            editElement.style.display = 'none';
+
+          } else {
+            alert("Error updating post:" + result.error) 
+          }
+        })
+        .catch(error => console.error('Error:', error));
     })
-
-
-    
   }

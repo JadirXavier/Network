@@ -149,7 +149,7 @@ def following(request):
 
 @csrf_exempt
 @login_required
-def get_post(request, post_id):
+def update_post(request, post_id):
     try:
         post = Post.objects.get(user=request.user, pk=post_id)
     except Post.DoesNotExist:
@@ -166,7 +166,7 @@ def get_post(request, post_id):
             post.body = new_body
             post.save()
 
-            return JsonResponse({"success": "Post updated."})
+            return JsonResponse({"success": "Post updated.", "post": post.serialize()})
         except:
             return JsonResponse({"error": "Invalid body."}, status=400)
         
