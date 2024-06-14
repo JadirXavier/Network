@@ -3,11 +3,19 @@ document.addEventListener('DOMContentLoaded', function() {
   const editButtons = document.querySelectorAll('.edit-button');
   editButtons.forEach(editButton => {
     editButton.addEventListener('click', () => {
-      const postID = editButton.getAttribute('data-post-id');
+      let postID = editButton.closest('[data-post-id]').getAttribute('data-post-id');
       editPost(postID);
-    });
+    })
   });
-});
+  //Gives likeToggle function for each likeButton
+  const likeButtons = document.querySelectorAll('.like-button');
+    likeButtons.forEach(likeButton => {
+      likeButton.addEventListener('click', () => {
+        let postID = likeButton.closest('[data-post-id]').getAttribute('data-post-id');
+        toggleLikes(postID)
+      })
+    })
+  });
 
 //Pagination
 function goToPage(maxPage) {
@@ -69,4 +77,8 @@ function goToPage(maxPage) {
         })
         .catch(error => console.error('Error:', error));
     })
+  }
+
+  function toggleLikes(ID){
+    let likeButtonId = `#like_button_${ID}`;
   }

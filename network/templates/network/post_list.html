@@ -1,6 +1,6 @@
 {% for post in page_obj %}
   <!--Post-->
-    <div class="card m-3 border rounded d-flex flex-column" id="post_view_{{post.id}}">
+    <div class="card m-3 border rounded d-flex flex-column" id="post_view_{{post.id}}"  data-post-id="{{ post.id }}">
       <div class="card-header">
         Posted by <a href="{% url 'profile' post.user.username %}">{{ post.user.username }}</a>
       </div>
@@ -12,9 +12,9 @@
         {% if user.is_authenticated %}
           <div class="d-flex flex-row align-items-end">
             {% if post.user == request.user %}
-              <button class="edit-button px-1" title="Edit" data-post-id="{{ post.id }}">✏️</button>
+              <button class="edit-button px-1" title="Edit">✏️</button>
             {% endif %}
-            <button class="heart-button px-1" title="Like">❤️ 0</button>
+            <button class="like-button px-1" title="Like">❤️ {{ post.likes_count }}</button>
           </div>
         {% endif %}
       </div>

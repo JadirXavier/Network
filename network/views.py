@@ -173,4 +173,24 @@ def update_post(request, post_id):
     else:
         return JsonResponse({"error": "PUT request required."}, status=405)
     
+@login_required
+def likes(request, post_id):
+    try:
+        post = Post.objects.get(pk=post_id)
+    except Post.DoesNotExist:
+        return JsonResponse({"error": "Post not found."}, status=404)
+
+    user = request.user
+    existing_like = Like.objects.filter(user=user, post=post)
+
+    if not existing_like:
+        Like.objects.create(user=user, post=post)
+        message = "Dislike"
+
+    else:
+        existing_like.delete()
+        message = "Like"
+
+    return JsonResponse({"message":message, "post":post.serialize(user)})
+
 

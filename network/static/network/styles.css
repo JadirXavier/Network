@@ -1,4 +1,4 @@
-  .heart-button, .edit-button, .save-edit-button{
+  .like-button, .edit-button, .save-edit-button{
         background: none;
         border: none;
         cursor: pointer;
@@ -7,7 +7,7 @@
         text-decoration: none;
   }
 
-  .heart-button:focus, .edit-button:focus, .save-edit-button:focus{
+  .like-button:focus, .edit-button:focus, .save-edit-button:focus{
     outline: none; 
     outline: none -webkit-focus-ring-color; 
 }

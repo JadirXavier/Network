@@ -11,20 +11,24 @@ class Post(models.Model):
     body = models.TextField(blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
+    @property
+    def likes_count(self):
+        return self.likes_received.count()
+
     def serialize(self):
         return {
             "id": self.id,
             "user": self.user.username,
             "body": self.body,
-            "timestamp": self.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
+            "timestamp": self.timestamp,
         }
 
     def __str__(self):
         return f"{self.user.username} posted at {self.timestamp}"
 
 class Like(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="like_user")
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="like_post")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="likes_given")
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="likes_received")
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
