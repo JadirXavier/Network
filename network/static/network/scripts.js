@@ -1,21 +1,33 @@
 document.addEventListener('DOMContentLoaded', function() {
-  //Gives editPost function for each editButton
-  const editButtons = document.querySelectorAll('.edit-button');
-  editButtons.forEach(editButton => {
-    editButton.addEventListener('click', () => {
-      let postID = editButton.closest('[data-post-id]').getAttribute('data-post-id');
-      editPost(postID);
-    })
-  });
-  //Gives likeToggle function for each likeButton
-  const likeButtons = document.querySelectorAll('.like-button');
+  function getLikesData() {
+    const likeButtons = document.querySelectorAll('.like-button');
     likeButtons.forEach(likeButton => {
       likeButton.addEventListener('click', () => {
-        let postID = likeButton.closest('[data-post-id]').getAttribute('data-post-id');
-        toggleLikes(postID)
+      let postID = likeButton.closest('[data-post-id]').getAttribute('data-post-id');
+      toggleLikes(postID)
       })
     })
-  });
+  };
+
+  // Função para lidar com cliques nos botões de editar e like
+  function handleButtonClick(event) {
+    let editButton = event.target.closest('.edit-button');
+    if (editButton) {
+      let postID = editButton.closest('[data-post-id]').getAttribute('data-post-id');
+      editPost(postID);
+      return;
+    }
+
+    let likeButton = event.target.closest('.like-button');
+    if (likeButton) {
+      let postID = likeButton.closest('[data-post-id]').getAttribute('data-post-id');
+      toggleLikes(postID);
+    }
+  }
+
+  // Adiciona um único listener para todos os cliques em botões de editar e like
+  document.addEventListener('click', handleButtonClick);
+});
 
 //Pagination
 function goToPage(maxPage) {
@@ -30,55 +42,76 @@ function goToPage(maxPage) {
 }
 
   
-  function editPost(ID) {
-    //Template tags IDs
-    let postViewId = `#post_view_${ID}`;
-    let postEditId = `#post_edit_${ID}`;
-    let saveButtonId = `#save_button_${ID}`
-    let postBodyId = `#post_body_${ID}`
+function editPost(ID) {
+  //Template tags IDs
+  let postViewId = `#post_view_${ID}`;
+  let postEditId = `#post_edit_${ID}`;
+  let saveButtonId = `#save_button_${ID}`
+  let postBodyId = `#post_body_${ID}`
 
-    //Template elements
-    let editElement = document.querySelector(postEditId);
-    let postElement = document.querySelector(postViewId);
-    let saveButton = document.querySelector(saveButtonId);
-    let editTextArea = document.querySelector(`${postEditId} textarea`);
-    let postBody = document.querySelector(postBodyId)
-    
-    //Hide post_view and show post_edit
-    editElement.className = 'card m-3 border rounded d-flex flex-column'
-    editElement.style.display = 'block';
-    postElement.className = ''
-    postElement.style.display = 'none';
+  //Template elements
+  let editElement = document.querySelector(postEditId);
+  let postElement = document.querySelector(postViewId);
+  let saveButton = document.querySelector(saveButtonId);
+  let editTextArea = document.querySelector(`${postEditId} textarea`);
+  let postBody = document.querySelector(postBodyId)
+  
+  //Hide post_view and show post_edit
+  editElement.className = 'card m-3 border rounded d-flex flex-column'
+  editElement.style.display = 'block';
+  postElement.className = ''
+  postElement.style.display = 'none';
 
-    //PUT request
-    saveButton.addEventListener('click', () => {
-        fetch(`/post/${ID}`, {
-            method: 'PUT',
-            body: JSON.stringify({
-                body: editTextArea.value,
-            })
-        })
-        .then(response => response.json())
-        .then(result => {
-          if(result.success) {
-            //Retrive updated post body with serialize() from update_post funcion from view
-            updatedPost = result.post
-            postBody.innerText = updatedPost.body
+  //PUT request
+  saveButton.addEventListener('click', () => {
+      fetch(`/post/${ID}`, {
+          method: 'PUT',
+          body: JSON.stringify({
+              body: editTextArea.value,
+          })
+      })
+      .then(response => response.json())
+      .then(result => {
+        if(result.success) {
+          //Retrive updated post body with serialize() from update_post funcion from view
+          updatedPost = result.post
+          postBody.innerText = updatedPost.body
 
-            //Hide post_edit and show post_view
-            postElement.className = 'card m-3 border rounded d-flex flex-column'
-            postElement.style.display = 'block';
-            editElement.className = ''
-            editElement.style.display = 'none';
+          //Hide post_edit and show post_view
+          postElement.className = 'card m-3 border rounded d-flex flex-column'
+          postElement.style.display = 'block';
+          editElement.className = ''
+          editElement.style.display = 'none';
 
-          } else {
-            alert("Error updating post:" + result.error) 
-          }
-        })
-        .catch(error => console.error('Error:', error));
-    })
-  }
+        } else {
+          alert("Error updating post:" + result.error) 
+        }
+      })
+      .catch(error => console.error('Error:', error));
+  }, { once: true })
+}
 
-  function toggleLikes(ID){
-    let likeButtonId = `#like_button_${ID}`;
-  }
+function toggleLikes(ID){
+  let likeButtonId = `#like_button_${ID}`;
+
+  let likeButton = document.querySelector(likeButtonId);
+
+  likeButton.addEventListener('click', () => {
+    fetch(`/post/${ID}/like`, {
+      method: 'POST',
+      body: JSON.stringify({
+      })
+  })
+  .then (response => response.json())
+  .then (result => {
+    console.log(result)
+    console.log(result.post.likes_count)
+    if (!result.post.user_liked) {
+      likeButton.innerText = `🤍 ${result.post.likes_count}`
+    } else {
+      likeButton.innerText = `❤️ ${result.post.likes_count}`
+    }
+  })
+  .catch(error => console.error('Error:', error));
+}, { once: true })
+}

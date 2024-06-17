@@ -11,16 +11,14 @@ class Post(models.Model):
     body = models.TextField(blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
-    @property
-    def likes_count(self):
-        return self.likes_received.count()
-
-    def serialize(self):
+    def serialize(self, user):
         return {
             "id": self.id,
             "user": self.user.username,
             "body": self.body,
             "timestamp": self.timestamp,
+            "user_liked": self.likes_received.filter(user=user).exists(),
+            "likes_count": self.likes_received.count()
         }
 
     def __str__(self):

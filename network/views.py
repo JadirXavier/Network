@@ -28,6 +28,9 @@ def index(request):
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
 
+    for post in page_obj:
+        post.user_liked = post.likes_received.filter(user=user).exists()
+
     return render(request, "network/index.html", {
         "page_obj": page_obj,
         "current_user":user
@@ -166,13 +169,14 @@ def update_post(request, post_id):
             post.body = new_body
             post.save()
 
-            return JsonResponse({"success": "Post updated.", "post": post.serialize()})
+            return JsonResponse({"success": "Post updated.", "post": post.serialize(user)})
         except:
             return JsonResponse({"error": "Invalid body."}, status=400)
         
     else:
         return JsonResponse({"error": "PUT request required."}, status=405)
-    
+
+@csrf_exempt    
 @login_required
 def likes(request, post_id):
     try:
