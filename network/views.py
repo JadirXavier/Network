@@ -11,7 +11,7 @@ import json
 
 from .models import User, Post, Like, Follow
 
-
+# Index page
 def index(request):
     posts = Post.objects.all().order_by('-timestamp')
     user = request.user
@@ -29,11 +29,16 @@ def index(request):
     page_obj = paginator.get_page(page_number)
 
     for post in page_obj:
+        # Creates a boolean key for each post object to follow if an user liked a post, and a title for the like_button tag 
         post.user_liked = post.likes_received.filter(user=user).exists()
+        if post.user_liked == True:
+            post.title = "Dislike"
+        else:
+            post.title = "Like"
 
     return render(request, "network/index.html", {
         "page_obj": page_obj,
-        "current_user":user
+        "current_user":user,
     })
 
 def login_view(request):
@@ -87,6 +92,7 @@ def register(request):
     else:
         return render(request, "network/register.html")
 
+# Profile page
 def profile(request, username):
     posts = Post.objects.filter(user__username=username).order_by('-timestamp')
     user_profile = User.objects.get(username=username)
@@ -102,6 +108,14 @@ def profile(request, username):
     paginator = Paginator(posts, 10)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
+
+    for post in page_obj:
+        # Creates a boolean key for each post object to follow if an user liked a post, and a title for the like_button tag 
+        post.user_liked = post.likes_received.filter(user=user).exists()
+        if post.user_liked == True:
+            post.title = "Dislike"
+        else:
+            post.title = "Like"
 
     return render(request, "network/profile.html", {
         "user_profile":user_profile,
@@ -145,16 +159,24 @@ def following(request):
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
 
+    for post in page_obj:
+        # Creates a boolean key for each post object to follow if an user liked a post, and a title for the like_button tag 
+        post.user_liked = post.likes_received.filter(user=user).exists()
+        if post.user_liked == True:
+            post.title = "Dislike"
+        else:
+            post.title = "Like"
+
     return render(request,"network/following.html", {
         "page_obj": page_obj,
         "current_user":user
     })
 
-@csrf_exempt
 @login_required
 def update_post(request, post_id):
+    user = request.user
     try:
-        post = Post.objects.get(user=request.user, pk=post_id)
+        post = Post.objects.get(user=user, pk=post_id)
     except Post.DoesNotExist:
         return JsonResponse({"error": "Post not found."}, status=404)
     
@@ -170,13 +192,12 @@ def update_post(request, post_id):
             post.save()
 
             return JsonResponse({"success": "Post updated.", "post": post.serialize(user)})
-        except:
-            return JsonResponse({"error": "Invalid body."}, status=400)
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON."}, status=400)
         
     else:
         return JsonResponse({"error": "PUT request required."}, status=405)
-
-@csrf_exempt    
+  
 @login_required
 def likes(request, post_id):
     try:
@@ -184,17 +205,22 @@ def likes(request, post_id):
     except Post.DoesNotExist:
         return JsonResponse({"error": "Post not found."}, status=404)
 
-    user = request.user
-    existing_like = Like.objects.filter(user=user, post=post)
+    if request.method == "POST":
+        try:
+            user = request.user
+            existing_like = Like.objects.filter(user=user, post=post)
 
-    if not existing_like:
-        Like.objects.create(user=user, post=post)
-        message = "Dislike"
+            if not existing_like:
+                Like.objects.create(user=user, post=post)
 
+            else:
+                existing_like.delete()
+
+            return JsonResponse({"post":post.serialize(user)})
+        except:
+            return JsonResponse({"error": "Invalid JSON."}, status=400)
     else:
-        existing_like.delete()
-        message = "Like"
+        return JsonResponse({"error": "POST request required."}, status=405)
 
-    return JsonResponse({"message":message, "post":post.serialize(user)})
 
 

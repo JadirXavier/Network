@@ -14,7 +14,7 @@
             {% if post.user == request.user %}
               <button class="edit-button px-1" title="Edit">✏️</button>
             {% endif %}
-            <button class="like-button px-1" title="Like" id="like_button_{{post.id}}">
+            <button class="like-button px-1" title="{{ post.title }}" id="like_button_{{post.id}}">
               {% if post.user_liked %}
                 ❤️ {{ post.likes_received.count }}
               {% else %}
