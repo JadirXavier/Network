@@ -28,13 +28,14 @@ def index(request):
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
 
-    for post in page_obj:
-        # Creates a boolean key for each post object to follow if an user liked a post, and a title for the like_button tag 
-        post.user_liked = post.likes_received.filter(user=user).exists()
-        if post.user_liked == True:
-            post.title = "Dislike"
-        else:
-            post.title = "Like"
+    if user.is_authenticated:
+        for post in page_obj:
+            # Creates a boolean key for each post object to follow if an user liked a post, and a title for the like_button tag 
+            post.user_liked = post.likes_received.filter(user=user).exists()
+            if post.user_liked == True:
+                post.title = "Dislike"
+            else:
+                post.title = "Like"
 
     return render(request, "network/index.html", {
         "page_obj": page_obj,
@@ -109,13 +110,14 @@ def profile(request, username):
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
 
-    for post in page_obj:
-        # Creates a boolean key for each post object to follow if an user liked a post, and a title for the like_button tag 
-        post.user_liked = post.likes_received.filter(user=user).exists()
-        if post.user_liked == True:
-            post.title = "Dislike"
-        else:
-            post.title = "Like"
+    if user.is_authenticated:
+        for post in page_obj:
+            # Creates a boolean key for each post object to follow if an user liked a post, and a title for the like_button tag 
+            post.user_liked = post.likes_received.filter(user=user).exists()
+            if post.user_liked == True:
+                post.title = "Dislike"
+            else:
+                post.title = "Like"
 
     return render(request, "network/profile.html", {
         "user_profile":user_profile,
@@ -159,13 +161,14 @@ def following(request):
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
 
-    for post in page_obj:
-        # Creates a boolean key for each post object to follow if an user liked a post, and a title for the like_button tag 
-        post.user_liked = post.likes_received.filter(user=user).exists()
-        if post.user_liked == True:
-            post.title = "Dislike"
-        else:
-            post.title = "Like"
+    if user.is_authenticated:
+        for post in page_obj:
+            # Creates a boolean key for each post object to follow if an user liked a post, and a title for the like_button tag 
+            post.user_liked = post.likes_received.filter(user=user).exists()
+            if post.user_liked == True:
+                post.title = "Dislike"
+            else:
+                post.title = "Like"
 
     return render(request,"network/following.html", {
         "page_obj": page_obj,
